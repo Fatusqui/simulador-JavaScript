@@ -12,13 +12,13 @@ function obtenerAlmacenamientoLocal(llave) {
 document.querySelector(".carrito").addEventListener("click", () => {
     const contenedorCompra = document.querySelector(".contenedorCompra");
     contenedorCompra.classList.add("abierto");
-    document.body.style.overflow = "hidden";  // Evitar el desplazamiento del fondo
+    document.body.style.overflow = "hidden";  
 });
 
 document.querySelector(".x").addEventListener("click", () => {
     const contenedorCompra = document.querySelector(".contenedorCompra");
     contenedorCompra.classList.remove("abierto");
-    document.body.style.overflow = "auto";  // Restaurar el desplazamiento del fondo
+    document.body.style.overflow = "auto";  
 });
 
 
