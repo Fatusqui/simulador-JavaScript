@@ -1,29 +1,12 @@
-
 function guardarAlmacenamientoLocal(llave, valor_a_guardar) {
     localStorage.setItem(llave, JSON.stringify(valor_a_guardar));
 }
-
-
 function obtenerAlmacenamientoLocal(llave) {
     const datos = JSON.parse(localStorage.getItem(llave));
     return datos || [];
 }
 
-document.querySelector(".carrito").addEventListener("click", () => {
-    const contenedorCompra = document.querySelector(".contenedorCompra");
-    contenedorCompra.classList.add("abierto");
-    document.body.style.overflow = "hidden";  // Evitar el desplazamiento del fondo
-});
-
-document.querySelector(".x").addEventListener("click", () => {
-    const contenedorCompra = document.querySelector(".contenedorCompra");
-    contenedorCompra.classList.remove("abierto");
-    document.body.style.overflow = "auto";  // Restaurar el desplazamiento del fondo
-});
-
-
 localStorage.removeItem("productos");
-
 
 const productosIniciales = [
     { nombre: "Jackson Dinky JS22 DKA", valor: 199.99, existencia: 5, urlImagen: "../img/guitar11.jpg" },
@@ -38,14 +21,11 @@ const productosIniciales = [
     { nombre: "Epiphone Limited-Edition", valor: 199.00, existencia: 6, urlImagen: "../img/guitar10.webp" }
 ];
 
-
 guardarAlmacenamientoLocal("productos", productosIniciales);
-
 
 let productos = obtenerAlmacenamientoLocal("productos");
 let lista = [];
 let valortotal = 0;
-
 
 const contenedor = document.getElementById("contenedor");
 const numero = document.getElementById("numero");
@@ -54,13 +34,13 @@ const productosCompra = document.getElementById("productosCompra");
 const total = document.getElementById("total");
 const x = document.getElementById("x");
 const body = document.body;
-
+const finalizarCompraModal = document.getElementById("finalizarCompraModal");
+const carritoIcono = document.querySelector(".carrito");
 
 window.addEventListener("load", () => {
     renderizarProductos(); 
     contenedorCompra.classList.add("none"); 
 });
-
 
 function renderizarProductos() {
     contenedor.innerHTML = ""; 
@@ -92,7 +72,6 @@ function renderizarProductos() {
     });
 }
 
-
 function comprar(indice) {
     const producto = productos[indice];
 
@@ -110,7 +89,6 @@ function comprar(indice) {
         numero.classList.add("diseñoNumero");
     }
 }
-
 
 function mostrarElementosLista() {
     productosCompra.innerHTML = ""; 
@@ -132,7 +110,6 @@ function mostrarElementosLista() {
     total.innerHTML = `<p>Valor Total:</p> <p><span>$${valortotal.toFixed(2)}</span></p>`;
 }
 
-
 function eliminar(indice) {
     const productoAEliminar = lista[indice];
     const producto = productos.find(p => p.nombre === productoAEliminar.nombre);
@@ -153,16 +130,78 @@ function eliminar(indice) {
     renderizarProductos();
 }
 
-
-document.querySelector(".carrito").addEventListener("click", () => {
-    body.style.overflow = "hidden";
-    contenedorCompra.classList.remove("none");
-    mostrarElementosLista();
+carritoIcono.addEventListener("click", () => {
+    finalizarCompraModal.classList.remove("none");
+    finalizarCompraModal.classList.add("abierto"); // Clase para animación (si la tienes).
+    document.body.style.overflow = "hidden"; // Deshabilitar scroll en el fondo.
+    mostrarElementosLista(); // Muestra los productos en el carrito cuando se abre el modal
 });
 
-
+// Cerrar modal
 x.addEventListener("click", () => {
-    body.style.overflow = "auto";
-    contenedorCompra.classList.add("none");
+    finalizarCompraModal.classList.add("none");
+    finalizarCompraModal.classList.remove("abierto");
+    document.body.style.overflow = "auto"; // Restaurar scroll.
 });
+
+// Cerrar modal al hacer clic fuera del contenido
+finalizarCompraModal.addEventListener("click", (e) => {
+    if (e.target === finalizarCompraModal) {
+        finalizarCompraModal.classList.add("none");
+        document.body.style.overflow = "auto";
+    }
+});
+
+function mostrarProductosEnResumen() {
+    const listaProductosCarrito = document.getElementById("listaProductosCarrito");
+    listaProductosCarrito.innerHTML = ""; // Limpiar antes de agregar
+
+    lista.forEach((producto, indice) => {
+        listaProductosCarrito.innerHTML += `
+            <div class="productoCarrito">
+                <span>${producto.nombre}</span>
+                <span>$${producto.precio.toFixed(2)}</span>
+            </div>
+        `;
+    });
+}
+
+// Llama esta función cuando abras el modal
+carritoIcono.addEventListener("click", () => {
+    mostrarProductosEnResumen();
+});
+
+
+
+
+const ordenSelect = document.getElementById("orden");
+
+// Evento para cambiar el orden al seleccionar una opción
+ordenSelect.addEventListener("change", () => {
+    const orden = ordenSelect.value; // "asc" o "desc"
+    ordenarProductosPorPrecio(orden);
+});
+
+function ordenarProductosPorPrecio(orden) {
+    // Ordenar productos según el criterio seleccionado
+    const productosOrdenados = [...productos].sort((a, b) => {
+        if (orden === "asc") {
+            return a.valor - b.valor; // Ordenar de menor a mayor
+        } else if (orden === "desc") {
+            return b.valor - a.valor; // Ordenar de mayor a menor
+        }
+    });
+
+    renderizarProductos(productosOrdenados); // Renderizar productos ordenados
+}
+
+
+
+
+
+
+
+
+
+
 
